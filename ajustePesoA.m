@@ -5,7 +5,7 @@ vetorUnitario = ones(1,tamanhoEntrada);
 
 vetorA = valorA * vetorUnitario;
 %%calculando primeiro o valor da funcao de rank para ai
-numerador = (sech((saidaUi * vetorUnitario) - (vetorEntrada + vetorA))).^2;
+numerador = (sech((saidaUi * vetorUnitario) - (vetorEntrada.' + vetorA))).^2;
 
 denominador = numerador * (vetorUnitario.');
 

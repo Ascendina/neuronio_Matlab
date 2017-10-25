@@ -7,7 +7,7 @@ vetorUnitario = ones(1,tamanhoEntrada);
 vetorB = valorB * vetorUnitario;
 
 %%calculando primeiro a funcao rank de B
-numerador = (sech( (saidaVi * vetorUnitario) - adicaoDualMinMax(vetorEntrada, vetorB) )).^2;
+numerador = (sech( (saidaVi * vetorUnitario) - adicaoDualMinMax(vetorEntrada.', vetorB) )).^2;
 
 denominador = numerador * (vetorUnitario.');
 

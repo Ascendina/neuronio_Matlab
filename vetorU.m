@@ -10,7 +10,7 @@ saidaCalculo = zeros(1,tamanhoVetorEntrada);
           vetorPesoExtend = vUnitario * vetorPeso(i);
           
           %%realizado o calculo da entrada com o peso
-          saidaCalculo(i) = dilatacao (vetorEntrada, vetorPesoExtend);  
+          saidaCalculo(i) = dilatacao (vetorEntrada.', vetorPesoExtend);  
     end
     
     saidaU = saidaCalculo;

@@ -10,7 +10,7 @@ saidaCalculo = zeros(1,tamanhoVetorEntrada);
           vetorPesoExtend = vUnitario * vetorPeso(i);
           
           %%realizado o calculo da entrada com o peso
-          saidaCalculo(i) = erosao (vetorEntrada, vetorPesoExtend);  
+          saidaCalculo(i) = erosao (vetorEntrada.', vetorPesoExtend);  
     end
     
     %%encontrando o supremo do vetor 
