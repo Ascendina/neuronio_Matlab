@@ -6,22 +6,16 @@
 tamanhoEntrada = 200;
 iteracoesTreinamentoValidacao = 1503;
 iteracoesTeste = 369;
-taxaAprendizado = 0.05;
+taxaAprendizado = 0.001;
 epocasValidacao = 3;
-limiarErro = 0.1;
+limiarErro = 0.000001;
 
 %%Iniciando pesos
 lambda = 0.1;
 theta = 0.1;
-%%pesoA = ones(1,tamanhoEntrada);
-%%pesoB = ones(1,tamanhoEntrada);
-%%pesoC = ones(1,tamanhoEntrada);
-%pesoA = randi([0,1],1,tamanhoEntrada);
-%pesoB = randi([0,1],1,tamanhoEntrada);
-%pesoC = randi([0,1],1,tamanhoEntrada);
-pesoA = rand(1,tamanhoEntrada);
-pesoB = rand(1,tamanhoEntrada);
-pesoC = rand(1,tamanhoEntrada);
+pesoA = randomizar(-1,1,tamanhoEntrada);
+pesoB = randomizar(-1,1,tamanhoEntrada);
+pesoC = randomizar(-1,1,tamanhoEntrada);
 bias = 1;
 saida = zeros(1,iteracoesTreinamentoValidacao);
 
@@ -40,9 +34,6 @@ valorDesejado = normalizacao(valorDesejado, 0, 1);
 erroPesoA = ones(1,tamanhoEntrada);
 erroPesoB = ones(1,tamanhoEntrada);
 erroPesoC = ones(1,tamanhoEntrada);
-%%erroPesoA = randi([1,10],1,tamanhoEntrada);
-%%erroPesoB = randi([1,10],1,tamanhoEntrada);
-%%erroPesoC = randi([1,10],1,tamanhoEntrada);
 erroTheta = 1;
 erroLambda = 1;
 
@@ -72,16 +63,19 @@ arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeira
 %%--------------------------------------------------------------------------------------------
 %%Treinamento e Validacao
 %%--------------------------------------------------------------------------------------------
-while (i < iteracoesTreinamentoValidacao) && (breakValidacao == 0) && (erro < limiarErro)
+%%&& (abs(erro) <= limiarErro)
+while (i < iteracoesTreinamentoValidacao) && (breakValidacao == 0) 
     
 %% realizando o calculo do neuronio
 
-% mi = min dilatacao e nu = max erosao
-%%olho = sprintf('variavel i: %d', i);
+%%olho = sprintf('i: %d',i);
 %%disp(olho);
 
-%%disp(length(vetorEntrada(i:(i+199))));
-%%disp(length(pesoA));
+
+%%olho = sprintf('breakValidacao %d', breakValidacao);
+%%disp(olho);
+
+% mi = min dilatacao e nu = max erosao
 mi = dilatacaoXPeso(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada);
 nu = erosaoXPeso(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoB, tamanhoEntrada);
 
@@ -89,8 +83,8 @@ alfa = (theta * mi) + ((1 - theta) * nu);
 beta = neuronioMLP(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoC, bias);
 saida(i) = (lambda * alfa) + ((1 - lambda) * beta);
 
-%%olho = sprintf('saida: %d', saida(i));
-%%disp(olho);
+olho = sprintf('SAIDA: %d', saida(i));
+disp(olho);
 
 %%escrevendo saida
 fprintf(arquivo,'%d \n', saida(i));
@@ -103,17 +97,10 @@ fprintf(arquivo,'%d \n', saida(i));
 %%Erro total = valor desejado - valor obtido
 
 somatorioErro(i) = calculoErro(valorDesejado(i+1), saida(i));
-%%olho = sprintf('somatorio erro: %d', somatorioErro(i));
-%%disp(olho);
-
 
 for j = 1:i
 erro = erro + somatorioErro(j);
 end
-
-%%olho = sprintf('Erro: %d', erro);
-%%disp(olho);
-
 
 %%calculando ajustes
 %%Peso A
@@ -151,7 +138,7 @@ for j = 1:i
 end
 
 mse(i) = somatorio/i;
-
+disp(mse(i));
 %%escrevendo mse
 fprintf(arquivoMSE,'%d\n',mse(i));
 
@@ -167,6 +154,9 @@ fprintf(arquivoMSE,'%d\n',mse(i));
            breakValidacao = 1;
        end
     end
+
+olho = sprintf('breakValidacao %d', breakValidacao);
+disp(olho);
 
 
 %%atualizando ponteiros
