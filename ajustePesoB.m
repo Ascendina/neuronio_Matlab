@@ -22,6 +22,6 @@ denominador = numerador * (vetorUnitario.');
 saidaV = numerador/denominador;
 
 %%realizando a multiplicacao para gerar a saida 
-saidaAjustada = -2 * lambda * (1 - theta) * saidaV * (saidaB.');
+saidaAjustada = -2 * erroCalculado * lambda * (1 - theta) * saidaV * (saidaB.');
 end
 

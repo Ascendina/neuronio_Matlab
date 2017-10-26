@@ -7,7 +7,7 @@ tamanhoEntrada = 200;
 iteracoesTreinamentoValidacao = 1503;
 iteracoesTeste = 369;
 taxaAprendizado = 0.001;
-epocasValidacao = 3;
+epocasValidacao = 10;
 limiarErro = 0.000001;
 
 %%Iniciando pesos
@@ -46,6 +46,7 @@ somatorio = 0;
 
 %%condicoes de parada
 breakValidacao = 0;
+mseCrescente = 0;
 erro = 0;
 i = 1;
 k = 0;
@@ -83,11 +84,11 @@ alfa = (theta * mi) + ((1 - theta) * nu);
 beta = neuronioMLP(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoC, bias);
 saida(i) = (lambda * alfa) + ((1 - lambda) * beta);
 
-olho = sprintf('SAIDA: %d', saida(i));
-disp(olho);
+%%olho = sprintf('SAIDA: %d', saida(i));
+%%disp(olho);
 
 %%escrevendo saida
-fprintf(arquivo,'%d \n', saida(i));
+fprintf(arquivo,'%f \n', saida(i));
 
 %%--------------------------------------------------------------------------------------------
 %%Calculando erros
@@ -96,26 +97,28 @@ fprintf(arquivo,'%d \n', saida(i));
 %% LEmbrar que o erro´eh um somatorio
 %%Erro total = valor desejado - valor obtido
 
-somatorioErro(i) = calculoErro(valorDesejado(i+1), saida(i));
+somatorioErro(i) = calculoErro(valorDesejado(i+1), saida(i))^2;
 
-for j = 1:i
-erro = erro + somatorioErro(j);
-end
+%%for j = 1:i
+%%erro = erro + somatorioErro(j);
+%%end
+
+erro = calculoErro(valorDesejado(i+1), saida(i));
 
 %%calculando ajustes
 %%Peso A
 vU = vetorU(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada);
 pesoA = pesoA - (taxaAprendizado * ajustePesoATotal(lambda, theta, erro, mi, vU, vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada));
-fprintf(arquivoPesoA,'%d \n', pesoA);
+fprintf(arquivoPesoA,'%f \n', pesoA);
 
 %%Peso B
 vV = vetorV(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoB, tamanhoEntrada);
 pesoB = pesoB - (taxaAprendizado * ajustePesoBTotal( lambda, theta, erro, vetorEntrada(i:(i+(tamanhoEntrada-1))), nu, vV, pesoB, tamanhoEntrada));
-fprintf(arquivoPesoB,'%d \n', pesoB);
+fprintf(arquivoPesoB,'%f \n', pesoB);
 
 %%Peso C
 pesoC = pesoC - (taxaAprendizado * ajustePesoC(vetorEntrada(i:(i+(tamanhoEntrada-1))), lambda, erro).');
-fprintf(arquivoPesoC,'%d \n', pesoC);
+fprintf(arquivoPesoC,'%f \n', pesoC);
 
 %%Theta
 theta = theta - (taxaAprendizado * ajustePesoTheta(lambda, mi, nu, erro));
@@ -130,17 +133,36 @@ lambda = lambda - (taxaAprendizado * ajustePesoLambda(alfa, beta, erro));
 %%--------------------------------------------------------------------------------------------
 %%Validando treinamento
 %%--------------------------------------------------------------------------------------------
-somatorioErroQuadrado(i) = (valorDesejado(i+1) - saida(i)).^2;
+%%olho = sprintf('tamanho ValorDesejado: %d', i+tamanhoEntrada);
+%%disp(olho);
+
+somatorioErroQuadrado(i) = (valorDesejado(i+tamanhoEntrada) - saida(i)).^2;
+
+%%olho = sprintf('SOMATORIO INSTANTANEO: %f', somatorioErroQuadrado(i));
+%%disp(olho);
+
+%%for j = 1:i
+%%    somatorio = somatorio + somatorioErroQuadrado(j);
+%%end
+
+%%olho = sprintf('SOMATORIO TOTAL: %f', somatorio);
+%%disp(olho);
 
 
-for j = 1:i
-    somatorio = somatorio + somatorioErroQuadrado(j);
-end
+%%mse(i) = somatorio/i;
 
-mse(i) = somatorio/i;
-disp(mse(i));
+%%olho = sprintf('MSE: %f', mse(i));
+%%disp(olho);
+
+%%olho = sprintf('MSE MATLAB: %f', immse(valorDesejado(i+tamanhoEntrada),saida(i)));
+%%disp(olho);
+
+%%disp(mse(i));
 %%escrevendo mse
-fprintf(arquivoMSE,'%d\n',mse(i));
+%%fprintf(arquivoMSE,'%f\n',mse(i));
+
+fprintf(arquivoMSE,'%f\n',somatorioErroQuadrado(i));
+
 
     if k < epocasValidacao
       k = k + 1;
@@ -148,10 +170,17 @@ fprintf(arquivoMSE,'%d\n',mse(i));
         %iniciando variavel
         k = 0;
         
-       if mse(i) < mse (i - epocasValidacao)
-           breakValidacao = 0;
+       if somatorioErroQuadrado(i) < somatorioErroQuadrado (i - epocasValidacao)
+          mseCrescente = 0;
        else
+          mseCrescente = mseCrescente + 1; 
+       end
+       
+       
+       if(mseCrescente >= 3)
            breakValidacao = 1;
+       else
+           breakValidacao = 0;
        end
     end
 
@@ -193,7 +222,7 @@ saida(i) = (lambda * alfa) + ((1 - lambda) * beta);
 
 %%escrevendo saida em arquivo
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saidaNeuronio.xlsx', saida(i));
-fprintf(arquivoTeste,'%d\n',saida(i));
+fprintf(arquivoTeste,'%f\n',saida(i));
 
 %%calculando erros
 
@@ -207,7 +236,7 @@ end
 mse(i) = somatorio/i;
 
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.xlsx', mse (i));
-fprintf(arquivoMSETeste,'%d\n',mse(i));
+fprintf(arquivoMSETeste,'%f\n',mse(i));
 
 %%MAPE
 somatorio = somatorio + ((valorDesejado(i+1) - saida(i)) / valorDesejado(i+1));
@@ -225,7 +254,7 @@ mape(i) = 100/i * somatorio;
 
 
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.xlsx', mape (i));
-fprintf(arquivoMape,'%d\n',mape(i));
+fprintf(arquivoMape,'%f\n',mape(i));
 
 
 %%aumentando a variavel
