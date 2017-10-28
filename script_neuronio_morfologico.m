@@ -8,11 +8,13 @@ iteracoesTreinamentoValidacao = 1503;
 iteracoesTeste = 369;
 taxaAprendizado = 0.001;
 epocasValidacao = 10;
-limiarErro = 0.000001;
+limiarErro = 0.0000001;
 
 %%Iniciando pesos
-lambda = 0.1;
-theta = 0.1;
+%%lambda = 0.1;
+%%theta = 0.1;
+lambda = rand(1);
+theta = rand(1);
 pesoA = randomizar(-1,1,tamanhoEntrada);
 pesoB = randomizar(-1,1,tamanhoEntrada);
 pesoC = randomizar(-1,1,tamanhoEntrada);
@@ -47,9 +49,10 @@ somatorio = 0;
 %%condicoes de parada
 breakValidacao = 0;
 mseCrescente = 0;
-erro = 0;
+erro = Inf;
 i = 1;
 k = 0;
+m = 1;
 
 %arquivo
 arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','w');
@@ -61,11 +64,13 @@ arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeira
 arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoB.txt','w');
 arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoC.txt','w');
 
+arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntrada.txt','w');
+fprintf(arquivoVetorEntrada,'%f \n', vetorEntrada);
 %%--------------------------------------------------------------------------------------------
 %%Treinamento e Validacao
 %%--------------------------------------------------------------------------------------------
-%%&& (abs(erro) <= limiarErro)
-while (i < iteracoesTreinamentoValidacao) && (breakValidacao == 0) 
+
+while (i < iteracoesTreinamentoValidacao) && (breakValidacao == 0) && (abs(erro) > limiarErro)
     
 %% realizando o calculo do neuronio
 
@@ -187,6 +192,9 @@ fprintf(arquivoMSE,'%f\n',somatorioErroQuadrado(i));
 olho = sprintf('breakValidacao %d', breakValidacao);
 disp(olho);
 
+olho = sprintf('Iteracao %d', i);
+disp(olho);
+
 
 %%atualizando ponteiros
 i = i + 1;
@@ -194,12 +202,12 @@ end
 
 %%limpando i
 %%i = 1;
-
+i = 1703;
 
 %%--------------------------------------------------------------------------------------------
 %%Teste
 %%--------------------------------------------------------------------------------------------
-while (i < iteracoesTeste)
+while (m < iteracoesTeste)
     
     
 %% realizando o calculo do neuronio
@@ -210,7 +218,7 @@ nu = erosaoXPeso(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoB, tamanhoEntrada);
 
 alfa = (theta * mi) + ((1 - theta) * nu); 
 beta = neuronioMLP(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoC, bias);
-saida(i) = (lambda * alfa) + ((1 - lambda) * beta);
+saida(m) = (lambda * alfa) + ((1 - lambda) * beta);
 
 %%olho = sprintf('Alfa: %d', alfa);
 %%disp (olho);
@@ -222,31 +230,33 @@ saida(i) = (lambda * alfa) + ((1 - lambda) * beta);
 
 %%escrevendo saida em arquivo
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saidaNeuronio.xlsx', saida(i));
-fprintf(arquivoTeste,'%f\n',saida(i));
+fprintf(arquivoTeste,'%f\n',saida(m));
 
 %%calculando erros
 
 %%MSE
-somatorioErroQuadrado(i) = (valorDesejado(i+1) - saida(i)).^2;
+somatorioErroQuadrado(m) = (valorDesejado(i+tamanhoEntrada) - saida(m)).^2;
 
-for j = 1:i
-    somatorio = somatorio + somatorioErroQuadrado(j);
-end
+%%for j = 1:i
+  %%  somatorio = somatorio + somatorioErroQuadrado(j);
+%%end
 
-mse(i) = somatorio/i;
+%%mse(i) = somatorio/i;
 
+mse(m) = somatorioErroQuadrado(m);
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.xlsx', mse (i));
-fprintf(arquivoMSETeste,'%f\n',mse(i));
+fprintf(arquivoMSETeste,'%f\n',mse(m));
 
 %%MAPE
-somatorio = somatorio + ((valorDesejado(i+1) - saida(i)) / valorDesejado(i+1));
+%%somatorio = somatorio + ((valorDesejado(i+1) - saida(i)) / valorDesejado(i+1));
+somatorio = ((valorDesejado(i+tamanhoEntrada) - saida(m)) / valorDesejado(i+tamanhoEntrada + 1));
 %%olho = sprintf('valorDesejado: %d', valorDesejado(i+1));
 %%disp(olho);
 %%olho = sprintf('Saida: %d', saida(i));
 %%disp (olho);
 
 
-mape(i) = 100/i * somatorio;
+mape(m) = 100/m * somatorio;
 
 
 %%olho = sprintf('variavel i: %d', i);
@@ -254,11 +264,14 @@ mape(i) = 100/i * somatorio;
 
 
 %xlswrite('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.xlsx', mape (i));
-fprintf(arquivoMape,'%f\n',mape(i));
+fprintf(arquivoMape,'%f\n',mape(m));
 
 
 %%aumentando a variavel
 i = i + 1;
+
+%%quantidade de iteracoes
+m = m + 1;
 end
 
 %%fechando arquivos
@@ -270,3 +283,4 @@ fclose(arquivoMape);
 fclose(arquivoPesoA);
 fclose(arquivoPesoB);
 fclose(arquivoPesoC);
+fclose(arquivoVetorEntrada);
