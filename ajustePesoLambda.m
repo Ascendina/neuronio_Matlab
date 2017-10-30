@@ -1,6 +1,8 @@
 function [ saidaAjustada ] = ajustePesoLambda(alfa, beta, erroCalculado)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%ajustePesoLambda(alfa, beta, erroCalculado)
+%   Funcao responsavel por realizar o ajuste do peso Lambda. Isto e possivel,
+%   pq se calcula a derivada da saida y pelo peso Lambda.   
+
 saidaAjustada = -2 * (erroCalculado)* (alfa - beta);
 
 end

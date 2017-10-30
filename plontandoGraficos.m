@@ -2,6 +2,8 @@
 %%%%%%%%%%%%%%    Rede Neural Morfologica Graficos  %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%Indicando o tamanho da entrada e quantas iteracoes terao o treinamento 
+%% validacao e teste
 tamanhoEntrada = 200;
 quantidadeEntradasTreinadas = 132;
 quantidadeEntradasTeste = 368;
@@ -17,11 +19,13 @@ arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_fin
 %%variaveis do programa
 valorDesejado = zeros(1,quantidadeEntradasTreinadas);
 valorSaida = zeros(1,quantidadeEntradasTreinadas);
-lixo = 0;
+lixo = 0; %%utilizado para descartar as leituras que nao correspondem aos valores das informacoes
 valorDesejadoTeste = zeros(1,quantidadeEntradasTeste);
 valorSaidaTeste = zeros(1,quantidadeEntradasTeste);
 valorSaidaMSE = zeros(1,quantidadeEntradasTeste);
 valorSaidaMAPE = zeros(1,quantidadeEntradasTeste);
+
+%%Variavel utilizada no loop
 l = 1;
 %%Obtendo Valor Desejado
 %%(132 - que foi ate aonde o neuronio treinou = 201 + 132 = 333)

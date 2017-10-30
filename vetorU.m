@@ -1,6 +1,8 @@
 function [ saidaU ] = vetorU(vetorEntrada, vetorPeso, tamanhoVetorEntrada)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+%vetorU(vetorEntrada, vetorPeso, tamanhoVetorEntrada)
+%   Funcao responsavel por realizar o calculo do vetor U do modelo do
+%   neuronio, ou seja, o vetor que contem todas as dilatacoes da entrada na
+%   posicao i com o peso na posicao i. 
 
 vUnitario = ones(1, tamanhoVetorEntrada);
 saidaCalculo = zeros(1,tamanhoVetorEntrada);

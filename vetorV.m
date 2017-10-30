@@ -1,6 +1,8 @@
 function [ saidaNu ] = vetorV(vetorEntrada, vetorPeso, tamanhoVetorEntrada)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%vetorV(vetorEntrada, vetorPeso, tamanhoVetorEntrada)
+%   Funcao responsavel por realizar o calculo do vetor V do modelo do
+%   neuronio, ou seja, o vetor que contem todas as erosoes da entrada na
+%   posicao i com o peso na posicao i. 
 
 vUnitario = ones(1, tamanhoVetorEntrada);
 saidaCalculo = zeros(1,tamanhoVetorEntrada);

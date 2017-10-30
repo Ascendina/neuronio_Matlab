@@ -43,6 +43,7 @@ somatorioErro = zeros(1,iteracoesTreinamentoValidacao);
 somatorioErroQuadrado = zeros(1,iteracoesTreinamentoValidacao);
 mse = zeros(1,iteracoesTreinamentoValidacao);
 mape = zeros(1,iteracoesTeste);
+
 %iniciando variavel
 somatorio = 0;
 

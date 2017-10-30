@@ -1,6 +1,11 @@
 function [ saidaAjustada ] = ajustePesoB(lambda, theta, erroCalculado, vetorEntrada, saidaVi, maxV, vetorV, valorB, tamanhoEntrada)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%ajustePesoB(lambda, theta, erroCalculado, vetorEntrada, saidaVi, maxV, vetorV, valorB, tamanhoEntrada)
+% Funcao responsavel por realizar o calculo da derivada da saida y pelo vetor de peso B. 
+%   maxV - maior valor da erosao da entrada pelo vetor peso;
+%   vetorV - todos os valores da erosao da entrada pelo vetor peso;
+%   saidaVi - resultado da erosao do vetor de entrada na posicao i com o
+%   vetor peso B na posicao i.
+
 
 vetorUnitario = ones(1,tamanhoEntrada);
 
