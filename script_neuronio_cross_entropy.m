@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%    Rede Neural Morfologica   %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%  cross entropy loss function  %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Parametros - tamanho
@@ -56,16 +57,16 @@ k = 0;
 m = 1;
 
 %arquivo
-arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','w');
-arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao.txt','w');
-arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste.txt','w');
-arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.txt','w');
+arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamentoCE.txt','w');
+arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacaoCE.txt','w');
+arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTesteCE.txt','w');
+arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTesteCE.txt','w');
 arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.txt','w');
-arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoA.txt','w');
-arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoB.txt','w');
-arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoC.txt','w');
+arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoACE.txt','w');
+arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoBCE.txt','w');
+arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoCCE.txt','w');
 
-arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntrada.txt','w');
+arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntradaCE.txt','w');
 fprintf(arquivoVetorEntrada,'%f \n', vetorEntrada);
 %%--------------------------------------------------------------------------------------------
 %%Treinamento e Validacao
@@ -103,36 +104,34 @@ fprintf(arquivo,'%f \n', saida(i));
 %% LEmbrar que o erro´eh um somatorio
 %%Erro total = valor desejado - valor obtido
 
-%%somatorioErro(i) = calculoErro(valorDesejado(i+1), saida(i))^2;
-somatorioErro(i) = calculoErro(valorDesejado(i+tamanhoEntrada), saida(i))^2;
+somatorioErro(i) = calculoErro(valorDesejado(i+1), saida(i))^2;
 
 %%for j = 1:i
 %%erro = erro + somatorioErro(j);
 %%end
 
-%%erro = calculoErro(valorDesejado(i+1), saida(i));
 erro = calculoErro(valorDesejado(i+tamanhoEntrada), saida(i));
 
 %%calculando ajustes
 %%Peso A
 vU = vetorU(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada);
-pesoA = pesoA - (taxaAprendizado * ajustePesoATotal(lambda, theta, erro, mi, vU, vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada));
+pesoA = pesoA - (taxaAprendizado * ajustePesoATotalCE(lambda, theta, valorDesejado(i+tamanhoEntrada), saida(i), mi, vU, vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada));
 fprintf(arquivoPesoA,'%f \n', pesoA);
 
 %%Peso B
 vV = vetorV(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoB, tamanhoEntrada);
-pesoB = pesoB - (taxaAprendizado * ajustePesoBTotal( lambda, theta, erro, vetorEntrada(i:(i+(tamanhoEntrada-1))), nu, vV, pesoB, tamanhoEntrada));
+pesoB = pesoB - (taxaAprendizado * ajustePesoBTotalCE( lambda, theta, valorDesejado(i+tamanhoEntrada), saida(i), vetorEntrada(i:(i+(tamanhoEntrada-1))), nu, vV, pesoB, tamanhoEntrada));
 fprintf(arquivoPesoB,'%f \n', pesoB);
 
 %%Peso C
-pesoC = pesoC - (taxaAprendizado * ajustePesoC(vetorEntrada(i:(i+(tamanhoEntrada-1))), lambda, erro).');
+pesoC = pesoC - (taxaAprendizado * ajustePesoCCE(vetorEntrada(i:(i+(tamanhoEntrada-1))).', lambda, valorDesejado(i+tamanhoEntrada), saida(i)));
 fprintf(arquivoPesoC,'%f \n', pesoC);
 
 %%Theta
-theta = theta - (taxaAprendizado * ajustePesoTheta(lambda, mi, nu, erro));
+theta = theta - (taxaAprendizado * ajustePesoThetaCE(lambda, mi, nu,  valorDesejado(i+tamanhoEntrada), saida(i)));
 
 %%lambda
-lambda = lambda - (taxaAprendizado * ajustePesoLambda(alfa, beta, erro));
+lambda = lambda - (taxaAprendizado * ajustePesoLambdaCE(alfa, beta, valorDesejado(i+tamanhoEntrada), saida(i)));
 
 %%--------------------------------------------------------------------------------------------
 %%--------------------------------------------------------------------------------------------
@@ -144,14 +143,16 @@ lambda = lambda - (taxaAprendizado * ajustePesoLambda(alfa, beta, erro));
 %%olho = sprintf('tamanho ValorDesejado: %d', i+tamanhoEntrada);
 %%disp(olho);
 
-somatorioErroQuadrado(i) = (valorDesejado(i+tamanhoEntrada) - saida(i)).^2;
+%%somatorioErroQuadrado(i) = (valorDesejado(i+tamanhoEntrada) - saida(i)).^2;
+
+somatorioErroQuadrado(i) = valorDesejado(i+tamanhoEntrada) * log(saida(i)) + (1-valorDesejado(i+tamanhoEntrada))*log(1-saida(i));
 
 %%olho = sprintf('SOMATORIO INSTANTANEO: %f', somatorioErroQuadrado(i));
 %%disp(olho);
 
-%%for j = 1:i
-%%    somatorio = somatorio + somatorioErroQuadrado(j);
-%%end
+for j = 1:i
+    somatorio = somatorio + somatorioErroQuadrado(j);
+end
 
 %%olho = sprintf('SOMATORIO TOTAL: %f', somatorio);
 %%disp(olho);
@@ -169,7 +170,7 @@ somatorioErroQuadrado(i) = (valorDesejado(i+tamanhoEntrada) - saida(i)).^2;
 %%escrevendo mse
 %%fprintf(arquivoMSE,'%f\n',mse(i));
 
-fprintf(arquivoMSE,'%f\n',somatorioErroQuadrado(i));
+fprintf(arquivoMSE,'%f\n',somatorio);
 
 
     if k < epocasValidacao

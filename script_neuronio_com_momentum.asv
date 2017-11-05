@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%    Rede Neural Morfologica   %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%    Gradiente com Momentum    %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Parametros - tamanho
@@ -18,8 +19,29 @@ theta = rand(1);
 pesoA = randomizar(-1,1,tamanhoEntrada);
 pesoB = randomizar(-1,1,tamanhoEntrada);
 pesoC = randomizar(-1,1,tamanhoEntrada);
-bias = 1;
+bias = 0.5;
 saida = zeros(1,iteracoesTreinamentoValidacao);
+
+%%Variaveis para salvar o peso para o calculo do momentum
+pesoAnteriorA = zeros(1, tamanhoEntrada);
+pesoAnteriorB = zeros(1, tamanhoEntrada);
+pesoAnteriorC = zeros(1, tamanhoEntrada);
+pesoAnteriorTheta = zeros(1, tamanhoEntrada);
+pesoAnteriorLambda = zeros(1, tamanhoEntrada);
+
+%%variaveis que calculam o momentum
+momentumA = zeros(1, tamanhoEntrada);
+momentumB = zeros(1, tamanhoEntrada);
+momentumC = zeros(1, tamanhoEntrada);
+momentumLambda = zeros(1, tamanhoEntrada);
+momentumTheta = zeros(1, tamanhoEntrada);
+
+cteMomentumA = 0.1;
+cteMomentumB = 0.1;
+cteMomentumC = 0.1;
+cteMomentumLambda = 0.1;
+cteMomentumTheta = 0.1;
+
 
 %%Obtendo valores da entrada
 %%vetorEntrada = xlsread('entrada.xlsx');
@@ -39,6 +61,7 @@ erroPesoC = ones(1,tamanhoEntrada);
 erroTheta = 1;
 erroLambda = 1;
 
+
 somatorioErro = zeros(1,iteracoesTreinamentoValidacao);
 somatorioErroQuadrado = zeros(1,iteracoesTreinamentoValidacao);
 mse = zeros(1,iteracoesTreinamentoValidacao);
@@ -56,14 +79,14 @@ k = 0;
 m = 1;
 
 %arquivo
-arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','w');
-arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao.txt','w');
-arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste.txt','w');
-arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.txt','w');
-arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.txt','w');
-arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoA.txt','w');
-arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoB.txt','w');
-arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoC.txt','w');
+arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento_momentum.txt','w');
+arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao_momentum.txt','w');
+arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste_momentum.txt','w');
+arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste_momentum.txt','w');
+arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste_momentum.txt','w');
+arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoA_momentum.txt','w');
+arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoB_momentum.txt','w');
+arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoC_momentum.txt','w');
 
 arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntrada.txt','w');
 fprintf(arquivoVetorEntrada,'%f \n', vetorEntrada);
@@ -116,23 +139,86 @@ erro = calculoErro(valorDesejado(i+tamanhoEntrada), saida(i));
 %%calculando ajustes
 %%Peso A
 vU = vetorU(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada);
-pesoA = pesoA - (taxaAprendizado * ajustePesoATotal(lambda, theta, erro, mi, vU, vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada));
+
+
+%%na primeira execucao vetor peso nao tem anterior
+if i == 1
+    momentumA = zeros(1,length(pesoA));
+else 
+   momentumA = momentumPeso(pesoA, pesoAnteriorA, cteMomentumA);
+end
+
+%%salvando o vetor peso A - para calcular o momentum
+pesoAnteriorA = pesoA;
+
+%%Calculo do peso
+pesoA = pesoA - (taxaAprendizado * ajustePesoATotal(lambda, theta, erro, mi, vU, vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoA, tamanhoEntrada)) + momentumA;
+
+%%salvando informacoes arquivo
 fprintf(arquivoPesoA,'%f \n', pesoA);
+
+
+
 
 %%Peso B
 vV = vetorV(vetorEntrada(i:(i+(tamanhoEntrada-1))), pesoB, tamanhoEntrada);
-pesoB = pesoB - (taxaAprendizado * ajustePesoBTotal( lambda, theta, erro, vetorEntrada(i:(i+(tamanhoEntrada-1))), nu, vV, pesoB, tamanhoEntrada));
+
+%%na primeira execucao vetor peso nao tem anterior
+if i == 1
+    momentumB = zeros(1,length(pesoB));
+else 
+   momentumB = momentumPeso(pesoB, pesoAnteriorB, cteMomentumB);
+end
+
+%%salvando o vetor peso A - para calcular o momentum
+pesoAnteriorB = pesoB;
+
+pesoB = pesoB - (taxaAprendizado * ajustePesoBTotal( lambda, theta, erro, vetorEntrada(i:(i+(tamanhoEntrada-1))), nu, vV, pesoB, tamanhoEntrada)) + momentumB;
 fprintf(arquivoPesoB,'%f \n', pesoB);
 
 %%Peso C
-pesoC = pesoC - (taxaAprendizado * ajustePesoC(vetorEntrada(i:(i+(tamanhoEntrada-1))), lambda, erro).');
+
+%%na primeira execucao vetor peso nao tem anterior
+if i == 1
+    momentumC = zeros(1,length(pesoC));
+else 
+   momentumC = momentumPeso(pesoC, pesoAnteriorC, cteMomentumC);
+end
+
+%%salvando o vetor peso A - para calcular o momentum
+pesoAnteriorC = pesoC;
+
+pesoC = pesoC - (taxaAprendizado * ajustePesoC(vetorEntrada(i:(i+(tamanhoEntrada-1))), lambda, erro).') + momentumC;
 fprintf(arquivoPesoC,'%f \n', pesoC);
 
 %%Theta
-theta = theta - (taxaAprendizado * ajustePesoTheta(lambda, mi, nu, erro));
+
+%%na primeira execucao vetor peso nao tem anterior
+if i == 1
+    momentumTheta = zeros(1,length(theta));
+else 
+   momentumTheta = momentumPeso(theta, pesoAnteriorTheta, cteMomentumTheta);
+end
+
+%%salvando o vetor peso A - para calcular o momentum
+pesoAnteriorTheta = theta;
+
+
+theta = theta - (taxaAprendizado * ajustePesoTheta(lambda, mi, nu, erro)) + momentumTheta;
 
 %%lambda
-lambda = lambda - (taxaAprendizado * ajustePesoLambda(alfa, beta, erro));
+
+%%na primeira execucao vetor peso nao tem anterior
+if i == 1
+    momentumLambda = zeros(1,length(lambda));
+else 
+   momentumLambda = momentumPeso(lambda, pesoAnteriorLambda, cteMomentumLambda);
+end
+
+%%salvando o vetor peso A - para calcular o momentum
+pesoAnteriorLambda = lambda;
+
+lambda = lambda + (taxaAprendizado * ajustePesoLambda(alfa, beta, erro)) + momentumLambda;
 
 %%--------------------------------------------------------------------------------------------
 %%--------------------------------------------------------------------------------------------

@@ -1,20 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%    Rede Neural Morfologica Graficos  %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%      Cross Entropy Loss Function     %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Indicando o tamanho da entrada e quantas iteracoes terao o treinamento 
 %% validacao e teste
 tamanhoEntrada = 200;
-quantidadeEntradasTreinadas = 132;
+quantidadeEntradasTreinadas = 286;
 quantidadeEntradasTeste = 368;
 
 %%Abrindo arquivos para leitura
-arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','r');
-arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao.txt','r');
-arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste.txt','r');
-arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.txt','r');
-arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.txt','r');
-arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntrada.txt','r');
+arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamentoCE.txt','r');
+arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacaoCE.txt','r');
+arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTesteCE.txt','r');
+arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTesteCE.txt','r');
+arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTesteCE.txt','r');
+arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntradaCE.txt','r');
 
 %%variaveis do programa
 valorDesejado = zeros(1,quantidadeEntradasTreinadas);
@@ -47,9 +48,9 @@ end
 
 %%plotando o grafico - TREINAMENTO
 figure(1);
-plot([1:quantidadeEntradasTreinadas], valorDesejado, 'color', 'red');
+plot([1:286], valorDesejado, 'color', 'red');
 hold on;
-plot([1:quantidadeEntradasTreinadas], valorSaida, 'color', 'blue');
+plot([1:286], valorSaida, 'color', 'blue');
 legend('valor Desejado','Valor Obtido');
 hold off;
 title ('Gráfico Valor Desejado (Vermelho) e Saída Obtida (Azul) - Treinamento');
