@@ -86,6 +86,10 @@ arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_fin
 
 %%(i < iteracoesTreinamentoValidacao) && 
 while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
+    %%Apresentando o numero da iteracao
+    olho = sprintf('ITERACAO: %d \n',contadorExecucoes);
+    disp(olho);
+
     %%Avisando ao usuario que esta na fase de treinamento
     display('treinamento');
     
@@ -98,6 +102,14 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
     end
     
     
+    %%limpando o somatorio para ter somente a media das amostras
+    somatorioAjustePesoA = 0;
+    somatorioAjustePesoB = 0;
+    somatorioAjustePesoC = 0;
+    somatorioAjusteTheta = 0;
+    somatorioAjusteLambda= 0;
+    somatorioErroTreinamento = 0;
+        
     %%calculando a saida do neuronio para o treinamento
     for j = 1:tamanhoBatch
 
@@ -222,6 +234,11 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
     erroMSEValidacaoAnterior = erroMSEValidacao;
     
     contadorExecucoes = contadorExecucoes + 1;
+    
+    
+    %%Apresentando o MSE
+    olho = sprintf('MSE Validacao: %d \n',erroMSEValidacao);
+    disp(olho);
 end
 
 %%--------------------------------------------------------------------------------------------
@@ -351,15 +368,15 @@ title ('Gráfico MSE - Validacao');
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Obtendo o valor que o neuronio gerou - Teste
-for k = 1:tamanhoDeslizeJanelaTeste
+for k = 1:tamanhoBatch
     valorSaidaTeste(k) = str2num(fgets(arquivoTeste));
 end
 
 %%plotando o grafico
 figure(4);
-plot([1:length(vetorSaidaDesejadaTeste)], vetorSaidaDesejadaTeste, 'color', 'red');
+plot([1:tamanhoBatch], vetorSaidaDesejadaTeste, 'color', 'red');
 hold on;
-plot([1:tamanhoDeslizeJanelaTeste], valorSaidaTeste, 'color', 'blue');
+plot([1:tamanhoBatch], valorSaidaTeste, 'color', 'blue');
 legend('valor Desejado','Valor Obtido');
 hold off;
 title ('Gráfico Valor Desejado (Vermelho) e Saída Obtida (Azul) - Teste');
