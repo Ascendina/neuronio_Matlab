@@ -4,17 +4,17 @@
 
 %%Parametros - tamanho
 tamanhoEntrada = 200;
-taxaAprendizado = 0.001;
+limiarErro = 0.1;
 epocasValidacao = 10;
-limiarErro = 0.0000001;
+taxaAprendizado = 0.000001;
 tamanhoBatch = 100;
 numMaxIter = 100000;
 
 %%Iniciando pesos
-lambdaAntigo = 0;
-lambda = rand(1);
-thetaAntigo = 0;
-theta = rand(1);
+lambdaAntigo = 0.5;
+lambda = 0.5;
+thetaAntigo = 0.5;
+theta = 0.5;
 pesoA = normrnd(0,0.001,1,tamanhoEntrada);
 pesoB = normrnd(0,0.001,1,tamanhoEntrada);
 pesoC = normrnd(0,0.001,1,tamanhoEntrada);
@@ -22,14 +22,14 @@ bias = 0;
 saida = 0;
 
 %%Obtendo valores da entrada para cada etapa
-vetorEntradaTreinamento = csvread('C:\Users\Mila\Documents\arquivos_doutorado\lerArquivo\BBDC4_D1_close_treinamento.csv');
-vetorEntradaTreinamento =  normalizacao(vetorEntradaTreinamento, 0, 1);
+vetorEntradaTreinamento = csvread('BBDC4_D1_close_treinamento.csv');
+%vetorEntradaTreinamento =  normalizacao(vetorEntradaTreinamento, 0, 1);
 
-vetorEntradaValidacao = csvread('C:\Users\Mila\Documents\arquivos_doutorado\lerArquivo\BBDC4_D1_close_validacao.csv');
-vetorEntradaValidacao =  normalizacao(vetorEntradaValidacao, 0, 1);
+vetorEntradaValidacao = csvread('BBDC4_D1_close_validacao.csv');
+%vetorEntradaValidacao =  normalizacao(vetorEntradaValidacao, 0, 1);
 
-vetorEntradaTeste = csvread('C:\Users\Mila\Documents\arquivos_doutorado\lerArquivo\BBDC4_D1_close_teste.csv');
-vetorEntradaTeste =  normalizacao(vetorEntradaTeste, 0, 1);
+vetorEntradaTeste = csvread('BBDC4_D1_close_teste.csv');
+% vetorEntradaTeste =  normalizacao(vetorEntradaTeste, 0, 1);
 
 conjuntoTreinamento = zeros(1,tamanhoBatch);
 entradaTreinamento = zeros(tamanhoBatch, tamanhoEntrada);
@@ -65,17 +65,17 @@ breakTreinamento = 0;
 contadorExecucoes = 0;
 
 %arquivo
-arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','w');
-arquivoValidacao = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_validacao.txt','w'); 
-arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao.txt','w');
-arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste.txt','w');
-arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.txt','w');
-arquivoMape = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mapeTeste.txt','w');
-arquivoPesoA = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoA.txt','w');
-arquivoPesoB = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoB.txt','w');
-arquivoPesoC = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\pesoC.txt','w');
+arquivo = fopen('saida_neuronio_treinamento.txt','w');
+arquivoValidacao = fopen('saida_validacao.txt','w'); 
+arquivoMSE = fopen('mse_validacao.txt','w');
+arquivoTeste = fopen('valoresTeste.txt','w');
+arquivoMSETeste = fopen('mseTeste.txt','w');
+arquivoMape = fopen('mapeTeste.txt','w');
+arquivoPesoA = fopen('pesoA.txt','w');
+arquivoPesoB = fopen('pesoB.txt','w');
+arquivoPesoC = fopen('pesoC.txt','w');
 
-arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\vetorEntrada.txt','w');
+arquivoVetorEntrada = fopen('vetorEntrada.txt','w');
 %%fprintf(arquivoVetorEntrada,'%f \n', vetorEntrada);
 
 
@@ -87,11 +87,11 @@ arquivoVetorEntrada = fopen('C:\Users\Mila\Documents\series_temporais\series_fin
 %%(i < iteracoesTreinamentoValidacao) && 
 while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
     %%Apresentando o numero da iteracao
-    olho = sprintf('ITERACAO: %d \n',contadorExecucoes);
-    disp(olho);
+%     olho = sprintf('ITERACAO: %d \n',contadorExecucoes);
+%     disp(olho);
 
     %%Avisando ao usuario que esta na fase de treinamento
-    display('treinamento');
+%     display('treinamento');
     
     %%escolhendo os vetores para treinamento
     conjuntoTreinamento = randsample(1:tamanhoDeslizeJanelaTreinamento,tamanhoBatch);
@@ -100,8 +100,7 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
         entradaTreinamento(i,:) = vetorEntradaTreinamento(conjuntoTreinamento(i):(conjuntoTreinamento(i)+tamanhoEntrada-1));
         vetorSaidaDesejadaTreinamento(i) = vetorEntradaTreinamento(conjuntoTreinamento(i)+tamanhoEntrada);
     end
-    
-    
+
     %%limpando o somatorio para ter somente a media das amostras
     somatorioAjustePesoA = 0;
     somatorioAjustePesoB = 0;
@@ -118,11 +117,11 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
         %%----------------------------------------------------
         
         % mi = min dilatacao e nu = max erosao
-        mi = dilatacaoXPeso(entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoA, tamanhoEntrada);
-        nu = erosaoXPeso(entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoB, tamanhoEntrada);
+        mi = dilatacaoXPeso(entradaTreinamento(j,:).', pesoA, tamanhoEntrada);
+        nu = erosaoXPeso(entradaTreinamento(j,:).', pesoB, tamanhoEntrada);
 
         alfa = (theta * mi) + ((1 - theta) * nu); 
-        beta = neuronioMLP(entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoC, bias);
+        beta = neuronioMLP(entradaTreinamento(j,:).', pesoC, bias);
         saida = (lambda * alfa) + ((1 - lambda) * beta);
 
         %%Salvando os valores do valor desejado (obtendo sempre 200 elementos a
@@ -143,11 +142,11 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
         %%----------------------------------------------------
         
         %%Peso A
-        vU = vetorU(entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoA, tamanhoEntrada);
+        vU = vetorU(entradaTreinamento(j,:).', pesoA, tamanhoEntrada);
         somatorioAjustePesoA = somatorioAjustePesoA + ajustePesoATotal(lambda, theta, erroTreinamento, mi, vU, entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoA, tamanhoEntrada);
 
         %%Peso B
-        vV = vetorV(entradaTreinamento(j:(j+(tamanhoEntrada-1))).', pesoB, tamanhoEntrada);
+        vV = vetorV(entradaTreinamento(j,:).', pesoB, tamanhoEntrada);
         somatorioAjustePesoB = somatorioAjustePesoB + ajustePesoBTotal( lambda, theta, erroTreinamento, entradaTreinamento(j:(j+(tamanhoEntrada-1))).', nu, vV, pesoB, tamanhoEntrada);
 
         %%Peso C
@@ -193,8 +192,9 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
 %%                                 VALIDACAO
 %%--------------------------------------------------------------------------------------------
     %%Avisando ao usuario que esta na fase de Validacao
-    display('Validacao');
+%     display('Validacao');
     
+    somatorioErroValidacao = 0;
     %%calculando a saida do neuronio para a validacao
     for j = 1:tamanhoDeslizeJanelaValidacao
         
@@ -214,7 +214,7 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
         fprintf(arquivoValidacao,'%f\n',saida);
         
         %%Calculando o somatorio do erro
-        somatorioErroValidacao = somatorioErroValidacao + (vetorSaidaDesejadaTreinamento(j) - saida).^2;
+        somatorioErroValidacao = somatorioErroValidacao + (vetorSaidaDesejadaValidacao(j) - saida).^2;
     end
     
     %%calculo do erro mse
@@ -237,7 +237,7 @@ while (contadorExecucoes < numMaxIter) && (abs(erroMSEValidacao) > limiarErro)
     
     
     %%Apresentando o MSE
-    olho = sprintf('MSE Validacao: %d \n',erroMSEValidacao);
+    olho = sprintf('%d, Tr: %.3f, Vd: %.3f\n',contadorExecucoes,erroMSETreinamento,erroMSEValidacao);
     disp(olho);
 end
 
@@ -303,11 +303,11 @@ valorMSETeste = zeros(1,tamanhoDeslizeJanelaTeste);
 
 
 %Abrindo os arquivos para leitura
-arquivo = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_neuronio_treinamento.txt','r');
-arquivoValidacao = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\saida_validacao.txt','r'); 
-arquivoMSE = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mse_validacao.txt','r');
-arquivoTeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\valoresTeste.txt','r');
-arquivoMSETeste = fopen('C:\Users\Mila\Documents\series_temporais\series_financeiras\neuronio_morfologico\neuronio_Matlab\mseTeste.txt','r');
+arquivo = fopen('saida_neuronio_treinamento.txt','r');
+arquivoValidacao = fopen('saida_validacao.txt','r'); 
+arquivoMSE = fopen('mse_validacao.txt','r');
+arquivoTeste = fopen('valoresTeste.txt','r');
+arquivoMSETeste = fopen('mseTeste.txt','r');
 
 
 
